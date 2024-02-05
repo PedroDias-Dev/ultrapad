@@ -1,9 +1,16 @@
 "use client";
 
 import { firestore } from "@/firebase/config";
-import { getFirestore, collection, doc, addDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  setDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { useDebounceValue } from "usehooks-ts";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [value, loading, error] = useDocument(
@@ -14,6 +21,16 @@ export default function Page({ params }: { params: { slug: string } }) {
   );
 
   const [text, setText] = useState("");
+  const [textDebounce, setTextDebounce] = useDebounceValue(text, 300);
+
+  useEffect(() => {
+    if (loading || !textDebounce) return;
+    setDoc(doc(firestore, "notes", params.slug), {
+      text,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textDebounce]);
 
   useEffect(() => {
     if (loading) return;
@@ -38,14 +55,8 @@ export default function Page({ params }: { params: { slug: string } }) {
         className="w-full h-full bg-neutral-800 text-neutral-50 resize-none p-3"
         value={text}
         onChange={(e) => {
-          // add text to firebase
-          const newText = e.target.value;
-
-          setDoc(doc(firestore, "notes", params.slug), {
-            text: newText,
-          });
-
-          setText(newText)
+          setText(e.target.value);
+          setTextDebounce(e.target.value);
         }}
       ></textarea>
     </div>
