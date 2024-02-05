@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 import {
   Form,
@@ -21,9 +20,11 @@ import { Social } from "@/components/auth/social";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/config";
 import { useToast } from "@/components/ui/use-toast";
+import { useAction } from "@/app/hooks/useAction";
 
 export default function Login() {
   const { toast } = useToast();
+  const action = useAction();
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -39,21 +40,11 @@ export default function Login() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { email, password } = values;
 
-    try {
+    await action(async () => {
       await signInWithEmailAndPassword(auth, email, password);
 
       router.push("/common/dashboard");
-    } catch (err) {
-      const message = err.message.includes("auth/invalid-credential")
-        ? "invalid credentials! please try again"
-        : "An error occurred";
-
-      toast({
-        variant: "destructive",
-        title: "error!",
-        description: message,
-      });
-    }
+    });
   };
 
   return (

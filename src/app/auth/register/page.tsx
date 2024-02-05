@@ -20,9 +20,11 @@ import * as z from "zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/config";
 import { useToast } from "@/components/ui/use-toast";
+import { useAction } from "@/app/hooks/useAction";
 
 export default function Register() {
   const { toast } = useToast();
+  const action = useAction();
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -38,22 +40,11 @@ export default function Register() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { email, password } = values;
 
-    try {
+    await action(async () => {
       await createUserWithEmailAndPassword(auth, email, password);
 
       router.push("/common/dashboard");
-    } catch (err) {
-      console.log(err);
-      const message = err.message.includes("auth/weak-password")
-        ? "that password is too weak and should be at least 6 characters long"
-        : "an error occurred, please try again";
-
-      toast({
-        variant: "destructive",
-        title: "error!",
-        description: message,
-      });
-    }
+    });
   };
 
   return (
