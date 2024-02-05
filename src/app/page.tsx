@@ -46,7 +46,7 @@ export default function Home() {
       <h3 className="text-neutral-50 text-sm mt-5">
         made by{" "}
         <a
-          href=""
+          href="https://github.com/PedroDias-Dev"
           target="_blank"
           rel="noopener noreferrer"
           className="underline text-teal-500"
