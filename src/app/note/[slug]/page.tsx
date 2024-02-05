@@ -24,7 +24,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [textDebounce, setTextDebounce] = useDebounceValue(text, 300);
 
   useEffect(() => {
-    if (loading || !textDebounce) return;
+    if (loading) return;
     setDoc(doc(firestore, "notes", params.slug), {
       text,
     });
