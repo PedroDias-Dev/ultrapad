@@ -17,12 +17,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Social } from "@/components/auth/social";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/config";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function Login() {
+export default function Register() {
   const { toast } = useToast();
 
   const formSchema = z.object({
@@ -40,13 +39,14 @@ export default function Login() {
     const { email, password } = values;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
 
       router.push("/common/dashboard");
     } catch (err) {
-      const message = err.message.includes("auth/invalid-credential")
-        ? "invalid credentials! please try again"
-        : "An error occurred";
+      console.log(err);
+      const message = err.message.includes("auth/weak-password")
+        ? "that password is too weak and should be at least 6 characters long"
+        : "an error occurred, please try again";
 
       toast({
         variant: "destructive",
@@ -60,8 +60,12 @@ export default function Login() {
     <div className="h-full flex flex-col gap-4">
       <div className="h-full flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <h3 className="text-3xl font-bold flex gap-2 items-center text-neutral-50">ultra-pad</h3>
-          <h2 className="text-sm text-secondary-200 text-neutral-200">login to your account</h2>
+          <h3 className="text-3xl font-bold flex gap-2 items-center text-neutral-50">
+            ultra-pad
+          </h3>
+          <h2 className="text-sm text-neutral-200">
+            create your account, really fast
+          </h2>
         </div>
         <Form {...form}>
           <div className="h-full">
@@ -102,20 +106,18 @@ export default function Login() {
                 />
               </div>
 
-              <Social />
-
               <div className="flex items-baseline justify-between mt-8 gap-2 tablet:!flex-col">
                 <Button variant="link" asChild>
                   <Link
-                    href="/auth/register"
+                    href="/auth/login"
                     className="text-sm hover:underline tablet:!text-xs text-neutral-200"
                   >
-                    {"don't have an account?"}
+                    {"already have an account?"}
                   </Link>
                 </Button>
 
                 <Button variant="default" size="lg">
-                  login
+                  register
                 </Button>
               </div>
             </form>

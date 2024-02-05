@@ -38,8 +38,7 @@ export const Social = () => {
       <Button
         type="button"
         size="lg"
-        className="w-full"
-        variant="outline"
+        className="w-full bg-neutral-600"
         onClick={() => onClick("google")}
       >
         <FcGoogle className="h-5 w-5" />
@@ -47,8 +46,7 @@ export const Social = () => {
       <Button
         type="button"
         size="lg"
-        className="w-full"
-        variant="outline"
+        className="w-full bg-neutral-600"
         onClick={() => onClick("github")}
       >
         <FaGithub className="h-5 w-5" />
