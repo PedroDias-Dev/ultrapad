@@ -25,6 +25,8 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     if (loading) return;
+    if (!text && text !== "") return;
+
     setDoc(doc(firestore, "notes", params.slug), {
       text,
     });
@@ -46,7 +48,12 @@ export default function Page({ params }: { params: { slug: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="w-full h-screen bg-neutral-800 text-neutral-500 resize-none p-3">
+        <p>hold up...</p>
+      </div>
+    );
 
   return (
     <div className="w-full h-screen">
