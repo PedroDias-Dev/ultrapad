@@ -2,26 +2,23 @@
 
 import { firestore } from "@/firebase/config";
 import {
-  getFirestore,
-  collection,
+  getDoc,
   doc,
-  addDoc,
   setDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import { useDebounceValue } from "usehooks-ts";
 
 export default function Page({ params }: { params: { slug: string } }) {
-  const [value, loading, error] = useDocument(
-    doc(firestore, "notes", params.slug),
-    {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    }
+  const [value, loading, error] = useDocumentDataOnce(
+    doc(firestore, "notes", params.slug)
   );
 
   const [text, setText] = useState("");
   const [textDebounce, setTextDebounce] = useDebounceValue(text, 300);
+
+  const [lastTyped, setLastTyped] = useState(new Date());
 
   useEffect(() => {
     if (loading) return;
@@ -43,10 +40,26 @@ export default function Page({ params }: { params: { slug: string } }) {
       });
     }
 
-    setText(value?.data()?.text);
+    setText(value?.text);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (new Date().getTime() - lastTyped.getTime() > 5000) {
+        getDoc(doc(firestore, "notes", params.slug)).then((doc) => {
+          setText(doc.data()?.text);
+        });
+
+        setLastTyped(new Date());
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTyped]);
 
   if (loading)
     return (
@@ -64,6 +77,8 @@ export default function Page({ params }: { params: { slug: string } }) {
         onChange={(e) => {
           setText(e.target.value);
           setTextDebounce(e.target.value);
+
+          setLastTyped(new Date());
         }}
       ></textarea>
     </div>
