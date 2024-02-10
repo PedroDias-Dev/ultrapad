@@ -1,3 +1,3 @@
-export const Code = () => {
+export default function Code() {
   return <></>;
 };

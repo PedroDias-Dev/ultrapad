@@ -1,3 +1,3 @@
-export const Notes = () => {
+export default function Notes () {
   return <></>;
 };
