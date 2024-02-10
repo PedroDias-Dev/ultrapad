@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/common/loading";
 import { firestore } from "@/firebase/config";
 import {
   getDoc,
@@ -63,9 +64,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   if (loading)
     return (
-      <div className="w-full h-screen bg-neutral-800 text-neutral-500 resize-none p-3">
-        <p>hold up...</p>
-      </div>
+      <Loading />
     );
 
   return (

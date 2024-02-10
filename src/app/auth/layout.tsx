@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/common/loading";
 import { auth } from "@/firebase/config";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -22,7 +23,7 @@ export default function CommonLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4">
